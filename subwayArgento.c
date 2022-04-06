@@ -177,7 +177,7 @@ void *entregar(void *data)
 	printf("\n¡Equipo %d ganó!\n", equipo);
 	usleep(1000000);
 	pthread_exit(NULL);
-	exit(1);
+	exit(-1);
 }
 
 void *ejecutarReceta(void *i)
@@ -249,7 +249,7 @@ void *ejecutarReceta(void *i)
 	sem_init(&(pthread_data->semaforos_param.sem_salar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_empanar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_cocinar), 0, 0);
-	sem_init(&(pthread_data->semaforos_param.sem_hornear), 2, 0);
+	sem_init(&(pthread_data->semaforos_param.sem_hornear), 1, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_armar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_pan), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_entregar), 0, 0);
