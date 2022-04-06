@@ -102,12 +102,12 @@ void *mezclar(void *data)
 void *salar(void *data)
 {
 	struct parametro *mydata = data;
-	int equipo = *((int *) &mydata->equipo_param);
+	int equipo = *((int *)&mydata->equipo_param);
 
 	sem_wait(&mydata->semaforos_param.sem_salar);
 	pthread_mutex_lock(&m_salero);
 	printf("\nEl equipo %d está usando el salero\n", equipo);
-	sleep(2);
+	usleep(20000);
 	printf("\nEl equipo %d terminó de usar el salero\n", equipo);
 	sem_post(&mydata->semaforos_param.sem_empanar);
 	pthread_mutex_unlock(&m_salero);
@@ -129,12 +129,12 @@ void *empanar(void *data)
 void *cocinar(void *data)
 {
 	struct parametro *mydata = data;
-	int equipo = *((int *) &mydata->equipo_param);
+	int equipo = *((int *)&mydata->equipo_param);
 
 	sem_wait(&mydata->semaforos_param.sem_cocinar);
 	pthread_mutex_lock(&m_sarten);
 	printf("\nEl equipo %d está usando la sartén\n", equipo);
-	sleep(5);
+	usleep(500000000);
 	printf("\nEl equipo %d terminó de usar la sartén\n", equipo);
 	sem_post(&mydata->semaforos_param.sem_armar);
 	pthread_mutex_unlock(&m_sarten);
@@ -144,12 +144,12 @@ void *cocinar(void *data)
 void *hornear(void *data)
 {
 	struct parametro *mydata = data;
-	int equipo = *((int *) &mydata->equipo_param);
+	int equipo = *((int *)&mydata->equipo_param);
 
 	sem_wait(&mydata->semaforos_param.sem_hornear);
 	pthread_mutex_lock(&m_horno);
 	printf("\nEl equipo %d está calentando el pan\n", equipo);
-	sleep(10);
+	usleep(1000000000);
 	printf("\nEquipo %d, el pan está listo\n", equipo);
 	sem_post(&mydata->semaforos_param.sem_pan);
 	pthread_mutex_unlock(&m_horno);
@@ -172,13 +172,13 @@ void *armar(void *data)
 void *entregar(void *data)
 {
 	struct parametro *mydata = data;
-	int equipo = *((int *) &mydata->equipo_param);
+	int equipo = *((int *)&mydata->equipo_param);
 	sem_wait(&mydata->semaforos_param.sem_entregar);
 	printf("\n¡Equipo %d ganó!\n", equipo);
 	usleep(1000000);
 	exit(-1);
 	pthread_exit(NULL);
-} 
+}
 
 void *ejecutarReceta(void *i)
 {
@@ -230,12 +230,12 @@ void *ejecutarReceta(void *i)
 	strcpy(pthread_data->pasos_param[1].ingredientes[1], "perejil");
 	strcpy(pthread_data->pasos_param[1].ingredientes[2], "huevo");
 	strcpy(pthread_data->pasos_param[1].ingredientes[3], "carne");
-	
+
 	strcpy(pthread_data->pasos_param[2].accion, "empanar");
 	strcpy(pthread_data->pasos_param[2].ingredientes[0], "sal");
 	strcpy(pthread_data->pasos_param[2].ingredientes[1], "pan rayado");
 	strcpy(pthread_data->pasos_param[2].ingredientes[2], "carne");
-	
+
 	strcpy(pthread_data->pasos_param[3].accion, "armar");
 	strcpy(pthread_data->pasos_param[3].ingredientes[0], "pan");
 	strcpy(pthread_data->pasos_param[3].ingredientes[1], "lechuga");
