@@ -8,6 +8,7 @@
 #define LIMITE 50
 
 pthread_mutex_t m_salero;
+pthread_mutex_t m_sarten;
 
 // creo estructura de semaforos
 struct semaforos
@@ -15,6 +16,7 @@ struct semaforos
 	sem_t sem_mezclar;
 	sem_t sem_salar;
 	sem_t sem_empanar;
+	sem_t sem_cocinar;
 };
 
 // creo los pasos con los ingredientes
@@ -99,7 +101,7 @@ void *salar(void *data)
 	sem_wait(&mydata->semaforos_param.sem_salar);
 	pthread_mutex_lock(&m_salero);
 	printf("\nEl equipo %d está usando el salero\n", equipo);
-	sleep(5);
+	sleep(2);
 	printf("\nEl equipo %d terminó de usar el salero\n", equipo);
 	sem_post(&mydata->semaforos_param.sem_empanar);
 	pthread_mutex_unlock(&m_salero);
@@ -113,8 +115,23 @@ void *empanar(void *data)
 	sem_wait(&mydata->semaforos_param.sem_empanar);
 	imprimirAccion(mydata, accion);
 	usleep(1000000);
-	// sem_post(&mydata->semaforos_param.sem_salar);
+	sem_post(&mydata->semaforos_param.sem_cocinar);
 
+	pthread_exit(NULL);
+}
+
+void *cocinar(void *data)
+{
+	struct parametro *mydata = data;
+	int equipo = *((int *) &mydata->equipo_param);
+
+	sem_wait(&mydata->semaforos_param.sem_cocinar);
+	pthread_mutex_lock(&m_sarten);
+	printf("\nEl equipo %d está usando la sartén\n", equipo);
+	sleep(5);
+	printf("\nEl equipo %d terminó de usar la sartén\n", equipo);
+	// sem_post(&mydata->semaforos_param.sem_empanar);
+	pthread_mutex_unlock(&m_sarten);
 	pthread_exit(NULL);
 }
 
@@ -125,14 +142,14 @@ void *ejecutarReceta(void *i)
 	sem_t sem_mezclar;
 	sem_t sem_salar;
 	sem_t sem_empanar;
-	// crear variables semaforos aqui
+	sem_t sem_cocinar;
 
 	// variables hilos
 	pthread_t p1;
 	pthread_t p2;
 	pthread_t p3;
 	pthread_t p4;
-	// crear variables hilos aqui
+	pthread_t p5;
 
 	// numero del equipo (casteo el puntero a un int)
 	int p = *((int *)i);
@@ -172,6 +189,7 @@ void *ejecutarReceta(void *i)
 	sem_init(&(pthread_data->semaforos_param.sem_mezclar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_salar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_empanar), 0, 0);
+	sem_init(&(pthread_data->semaforos_param.sem_cocinar), 0, 0);
 	// inicializar demas semaforos aqui
 
 	// creo los hilos a todos les paso el struct creado (el mismo a todos los hilos) ya que todos comparten los semaforos
@@ -180,6 +198,7 @@ void *ejecutarReceta(void *i)
 	rc = pthread_create(&p2, NULL, mezclar, pthread_data);
 	rc = pthread_create(&p3, NULL, salar, pthread_data);
 	rc = pthread_create(&p4, NULL, empanar, pthread_data);
+	rc = pthread_create(&p5, NULL, cocinar, pthread_data);
 	// crear demas hilos aqui
 
 	// join de todos los hilos
@@ -187,6 +206,7 @@ void *ejecutarReceta(void *i)
 	pthread_join(p2, NULL);
 	pthread_join(p3, NULL);
 	pthread_join(p4, NULL);
+	pthread_join(p5, NULL);
 
 	// valido que el hilo se alla creado bien
 	if (rc)
