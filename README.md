@@ -10,6 +10,7 @@ Para el desarrollo del mismo, no se cuentan con los materiales necesarios para q
 Para el desarrollo de este decidí crear los siguientes semáforos:
 
 |Nombre Semáforo|Estado inicial|
+| :------------ | :------------
 | sem_mezclar | 0 |
 | sem_salar | 0 |
 | sem_empanar | 0 |
@@ -21,6 +22,7 @@ Para el desarrollo de este decidí crear los siguientes semáforos:
 Asimismo se toman los siguientes procesos para la simulación de las actividades y/o acciones a realizar:
 
 |Nombre| Característica |
+| :------------ | :------------
 | P1 | Cortar ingredientes|
 | P2 | Hornear pan |
 | P3 | Mezclar ingredientes cortados |
