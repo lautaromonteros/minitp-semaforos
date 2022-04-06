@@ -10,7 +10,6 @@
 pthread_mutex_t m_salero;
 pthread_mutex_t m_sarten;
 pthread_mutex_t m_horno;
-int pthread_mutex_init(&m_horno, 2);
 
 // creo estructura de semaforos
 struct semaforos
