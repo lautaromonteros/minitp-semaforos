@@ -147,7 +147,7 @@ void *hornear(void *data)
 	int equipo = *((int *)&mydata->equipo_param);
 
 	sem_wait(&mydata->semaforos_param.sem_hornear);
-	pthread_mutex_lock(&m_horno);
+	pthread_mutex_trylock(&m_horno);
 	printf("\nEl equipo %d está calentando el pan\n", equipo);
 	usleep(10000000);
 	printf("\nEquipo %d, el pan está listo\n", equipo);
@@ -176,8 +176,8 @@ void *entregar(void *data)
 	sem_wait(&mydata->semaforos_param.sem_entregar);
 	printf("\n¡Equipo %d ganó!\n", equipo);
 	usleep(1000000);
-	exit(-1);
 	pthread_exit(NULL);
+	exit(1);
 }
 
 void *ejecutarReceta(void *i)
@@ -232,9 +232,8 @@ void *ejecutarReceta(void *i)
 	strcpy(pthread_data->pasos_param[1].ingredientes[3], "carne");
 
 	strcpy(pthread_data->pasos_param[2].accion, "empanar");
-	strcpy(pthread_data->pasos_param[2].ingredientes[0], "sal");
-	strcpy(pthread_data->pasos_param[2].ingredientes[1], "pan rayado");
-	strcpy(pthread_data->pasos_param[2].ingredientes[2], "carne");
+	strcpy(pthread_data->pasos_param[2].ingredientes[0], "pan rayado");
+	strcpy(pthread_data->pasos_param[2].ingredientes[1], "carne");
 
 	strcpy(pthread_data->pasos_param[3].accion, "armar");
 	strcpy(pthread_data->pasos_param[3].ingredientes[0], "pan");
