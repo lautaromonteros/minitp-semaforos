@@ -175,7 +175,6 @@ void *entregar(void *data)
 	int equipo = *((int *)&mydata->equipo_param);
 	sem_wait(&mydata->semaforos_param.sem_entregar);
 	printf("\n¡Equipo %d ganó!\n", equipo);
-	usleep(1000000);
 	exit(-1);
 	pthread_exit(NULL);
 }
