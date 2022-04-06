@@ -12,6 +12,7 @@ struct semaforos
 {
 	sem_t sem_mezclar;
 	sem_t sem_salar;
+	sem_t sem_sarten;
 };
 
 // creo los pasos con los ingredientes
@@ -80,12 +81,24 @@ void *mezclar(void *data)
 {
 	char *accion = "mezclar";
 	struct parametro *mydata = data;
+	sem_wait(&mydata->semaforos_param.sem_mezclar);
 	imprimirAccion(mydata, accion);
 	usleep(1000000);
 	sem_post(&mydata->semaforos_param.sem_salar);
 
 	pthread_exit(NULL);
 }
+
+/* void *empanar(void *data)
+{
+	char *accion = "empanar";
+	struct parametro *mydata = data;
+	imprimirAccion(mydata, accion);
+	usleep(1000000);
+	sem_post(&mydata->semaforos_param.sem_salar);
+
+	pthread_exit(NULL);
+} */
 
 void *ejecutarReceta(void *i)
 {
@@ -143,7 +156,6 @@ void *ejecutarReceta(void *i)
 	// join de todos los hilos
 	pthread_join(p1, NULL);
 	pthread_join(p2, NULL);
-	// crear join de demas hilos
 
 	// valido que el hilo se alla creado bien
 	if (rc)
@@ -203,3 +215,6 @@ int main()
 
 	pthread_exit(NULL);
 }
+
+// Para compilar:   gcc subwayArgento.c -o ejecutable -lpthread
+// Para ejecutar:   ./ejecutable
