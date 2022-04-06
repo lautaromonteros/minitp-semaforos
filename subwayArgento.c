@@ -134,7 +134,7 @@ void *cocinar(void *data)
 	sem_wait(&mydata->semaforos_param.sem_cocinar);
 	pthread_mutex_lock(&m_sarten);
 	printf("\nEl equipo %d está usando la sartén\n", equipo);
-	usleep(500000000);
+	usleep(500000);
 	printf("\nEl equipo %d terminó de usar la sartén\n", equipo);
 	sem_post(&mydata->semaforos_param.sem_armar);
 	pthread_mutex_unlock(&m_sarten);
@@ -149,7 +149,7 @@ void *hornear(void *data)
 	sem_wait(&mydata->semaforos_param.sem_hornear);
 	pthread_mutex_lock(&m_horno);
 	printf("\nEl equipo %d está calentando el pan\n", equipo);
-	usleep(1000000000);
+	usleep(1000000);
 	printf("\nEquipo %d, el pan está listo\n", equipo);
 	sem_post(&mydata->semaforos_param.sem_pan);
 	pthread_mutex_unlock(&m_horno);
