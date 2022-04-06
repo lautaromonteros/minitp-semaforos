@@ -12,7 +12,7 @@ struct semaforos
 {
 	sem_t sem_mezclar;
 	sem_t sem_salar;
-	sem_t sem_sarten;
+	sem_t sem_empanar;
 };
 
 // creo los pasos con los ingredientes
@@ -89,16 +89,17 @@ void *mezclar(void *data)
 	pthread_exit(NULL);
 }
 
-/* void *empanar(void *data)
+void *empanar(void *data)
 {
 	char *accion = "empanar";
 	struct parametro *mydata = data;
+	sem_wait(&mydata->semaforos_param.sem_salar);
 	imprimirAccion(mydata, accion);
 	usleep(1000000);
 	sem_post(&mydata->semaforos_param.sem_salar);
 
 	pthread_exit(NULL);
-} */
+}
 
 void *ejecutarReceta(void *i)
 {
@@ -106,11 +107,13 @@ void *ejecutarReceta(void *i)
 	// variables semaforos
 	sem_t sem_mezclar;
 	sem_t sem_salar;
+	sem_t sem_empanar;
 	// crear variables semaforos aqui
 
 	// variables hilos
 	pthread_t p1;
 	pthread_t p2;
+	pthread_t p3;
 	// crear variables hilos aqui
 
 	// numero del equipo (casteo el puntero a un int)
@@ -151,11 +154,13 @@ void *ejecutarReceta(void *i)
 	int rc;
 	rc = pthread_create(&p1, NULL, cortar, pthread_data);
 	rc = pthread_create(&p2, NULL, mezclar, pthread_data);
+	rc = pthread_create(&p3, NULL, empanar, pthread_data);
 	// crear demas hilos aqui
 
 	// join de todos los hilos
 	pthread_join(p1, NULL);
 	pthread_join(p2, NULL);
+	pthread_join(p3, NULL);
 
 	// valido que el hilo se alla creado bien
 	if (rc)
