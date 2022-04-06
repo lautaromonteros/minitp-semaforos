@@ -10,6 +10,7 @@
 pthread_mutex_t m_salero;
 pthread_mutex_t m_sarten;
 pthread_mutex_t m_horno;
+pthread_mutex_init(&m_horno, 2);
 
 // creo estructura de semaforos
 struct semaforos
@@ -176,8 +177,8 @@ void *entregar(void *data)
 	sem_wait(&mydata->semaforos_param.sem_entregar);
 	printf("\n¡Equipo %d ganó!\n", equipo);
 	usleep(1000000);
-	pthread_exit(NULL);
 	exit(-1);
+	pthread_exit(NULL);
 }
 
 void *ejecutarReceta(void *i)
