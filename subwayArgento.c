@@ -19,6 +19,8 @@ struct semaforos
 	sem_t sem_empanar;
 	sem_t sem_cocinar;
 	sem_t sem_hornear;
+	sem_t sem_armar;
+	sem_t sem_entregar;
 };
 
 // creo los pasos con los ingredientes
@@ -148,10 +150,33 @@ void *hornear(void *data)
 	printf("\nEl equipo %d está calentando el pan\n", equipo);
 	sleep(10);
 	printf("\nEquipo %d, el pan está listo\n", equipo);
-	// sem_post(&mydata->semaforos_param.sem_empanar);
+	sem_post(&mydata->semaforos_param.sem_armar);
 	pthread_mutex_unlock(&m_horno);
 	pthread_exit(NULL);
 }
+
+void *armar(void *data)
+{
+	char *accion = "armar";
+	struct parametro *mydata = data;
+	sem_wait(&mydata->semaforos_param.sem_armar);
+	imprimirAccion(mydata, accion);
+	usleep(1000000);
+	sem_post(&mydata->semaforos_param.sem_entregar);
+
+	pthread_exit(NULL);
+}
+
+void *entregar(void *data)
+{
+	struct parametro *mydata = data;
+	int equipo = *((int *) &mydata->equipo_param);
+	sem_wait(&mydata->semaforos_param.sem_entregar);
+	printf("\n¡Equipo %d ganó!\n", equipo);
+	usleep(1000000);
+	exit(-1);
+	pthread_exit(NULL);
+} 
 
 void *ejecutarReceta(void *i)
 {
@@ -162,6 +187,8 @@ void *ejecutarReceta(void *i)
 	sem_t sem_empanar;
 	sem_t sem_cocinar;
 	sem_t sem_hornear;
+	sem_t sem_armar;
+	sem_t sem_entregar;
 
 	// variables hilos
 	pthread_t p1;
@@ -170,6 +197,8 @@ void *ejecutarReceta(void *i)
 	pthread_t p4;
 	pthread_t p5;
 	pthread_t p6;
+	pthread_t p7;
+	pthread_t p8;
 
 	// numero del equipo (casteo el puntero a un int)
 	int p = *((int *)i);
@@ -203,6 +232,14 @@ void *ejecutarReceta(void *i)
 	strcpy(pthread_data->pasos_param[2].ingredientes[0], "sal");
 	strcpy(pthread_data->pasos_param[2].ingredientes[1], "pan rayado");
 	strcpy(pthread_data->pasos_param[2].ingredientes[2], "carne");
+	
+	strcpy(pthread_data->pasos_param[3].accion, "armar");
+	strcpy(pthread_data->pasos_param[3].ingredientes[0], "pan");
+	strcpy(pthread_data->pasos_param[3].ingredientes[1], "lechuga");
+	strcpy(pthread_data->pasos_param[3].ingredientes[2], "tomate");
+	strcpy(pthread_data->pasos_param[3].ingredientes[3], "cebolla morada");
+	strcpy(pthread_data->pasos_param[3].ingredientes[4], "pepino");
+	strcpy(pthread_data->pasos_param[3].ingredientes[5], "milanesa");
 
 	// inicializo los semaforos
 
@@ -211,6 +248,8 @@ void *ejecutarReceta(void *i)
 	sem_init(&(pthread_data->semaforos_param.sem_empanar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_cocinar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_hornear), 1, 0);
+	sem_init(&(pthread_data->semaforos_param.sem_armar), 0, 0);
+	sem_init(&(pthread_data->semaforos_param.sem_entregar), 0, 0);
 
 	// creo los hilos a todos les paso el struct creado (el mismo a todos los hilos) ya que todos comparten los semaforos
 	int rc;
@@ -220,6 +259,8 @@ void *ejecutarReceta(void *i)
 	rc = pthread_create(&p4, NULL, salar, pthread_data);
 	rc = pthread_create(&p5, NULL, empanar, pthread_data);
 	rc = pthread_create(&p6, NULL, cocinar, pthread_data);
+	rc = pthread_create(&p7, NULL, armar, pthread_data);
+	rc = pthread_create(&p8, NULL, entregar, pthread_data);
 
 	// join de todos los hilos
 	pthread_join(p1, NULL);
@@ -228,6 +269,8 @@ void *ejecutarReceta(void *i)
 	pthread_join(p4, NULL);
 	pthread_join(p5, NULL);
 	pthread_join(p6, NULL);
+	pthread_join(p7, NULL);
+	pthread_join(p8, NULL);
 
 	// valido que el hilo se alla creado bien
 	if (rc)
@@ -242,6 +285,8 @@ void *ejecutarReceta(void *i)
 	sem_destroy(&sem_empanar);
 	sem_destroy(&sem_cocinar);
 	sem_destroy(&sem_hornear);
+	sem_destroy(&sem_armar);
+	sem_destroy(&sem_entregar);
 
 	// salida del hilo
 	pthread_exit(NULL);
@@ -289,6 +334,3 @@ int main()
 
 	pthread_exit(NULL);
 }
-
-// Para compilar:   gcc subwayArgento.c -o ejecutable -lpthread
-// Para ejecutar:   ./ejecutable
