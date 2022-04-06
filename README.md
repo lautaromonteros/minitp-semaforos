@@ -35,10 +35,12 @@ Asimismo se toman los siguientes procesos para la simulación de las actividades
 ### Prueba de escritorio
 
 Teniendo en cuenta que: 
+
 P() --> wait
 V() --> signal
 
 | P1 | P2 | P3 | P4 | P5 | P6 | P7 | P8 |
+| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------
 |  | P(sem_hornear)  | P(sem_mezclar) | P(sem_salar) | P(sem_empanar) | P(sem_cocinar) | P(sem_armar) | P(sem_entregar) |
 | cortar  | hornear | mezclar | salar | empanar | cocinar | armar | entregar |
 | V(sem_mezclar) | V(sem_armar) | V(sem_salar) | V(sem_empanar) | V(sem_cocinar) | V(sem_armar) | |
