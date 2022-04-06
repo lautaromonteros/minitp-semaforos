@@ -143,6 +143,11 @@ void *ejecutarReceta(void *i)
 	strcpy(pthread_data->pasos_param[1].ingredientes[1], "perejil");
 	strcpy(pthread_data->pasos_param[1].ingredientes[2], "huevo");
 	strcpy(pthread_data->pasos_param[1].ingredientes[3], "carne");
+	
+	strcpy(pthread_data->pasos_param[2].accion, "empanar");
+	strcpy(pthread_data->pasos_param[2].ingredientes[0], "sal");
+	strcpy(pthread_data->pasos_param[2].ingredientes[1], "pan rayado");
+	strcpy(pthread_data->pasos_param[2].ingredientes[2], "carne");
 
 	// inicializo los semaforos
 
