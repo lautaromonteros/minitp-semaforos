@@ -7,6 +7,8 @@
 
 #define LIMITE 50
 
+pthread_mutex_t m_salero;
+
 // creo estructura de semaforos
 struct semaforos
 {
@@ -89,14 +91,29 @@ void *mezclar(void *data)
 	pthread_exit(NULL);
 }
 
+void *salar(void *data)
+{
+	struct parametro *mydata = data;
+	int equipo = *((int *) &mydata->equipo_param);
+
+	sem_wait(&mydata->semaforos_param.sem_salar);
+	pthread_mutex_lock(&m_salero);
+	printf("\nEl equipo %d está usando el salero\n", equipo);
+	sleep(5);
+	printf("\nEl equipo %d terminó de usar el salero\n", equipo);
+	sem_post(&mydata->semaforos_param.sem_empanar);
+	pthread_mutex_unlock(&m_salero);
+	pthread_exit(NULL);
+}
+
 void *empanar(void *data)
 {
 	char *accion = "empanar";
 	struct parametro *mydata = data;
-	sem_wait(&mydata->semaforos_param.sem_salar);
+	sem_wait(&mydata->semaforos_param.sem_empanar);
 	imprimirAccion(mydata, accion);
 	usleep(1000000);
-	sem_post(&mydata->semaforos_param.sem_salar);
+	// sem_post(&mydata->semaforos_param.sem_salar);
 
 	pthread_exit(NULL);
 }
@@ -114,6 +131,7 @@ void *ejecutarReceta(void *i)
 	pthread_t p1;
 	pthread_t p2;
 	pthread_t p3;
+	pthread_t p4;
 	// crear variables hilos aqui
 
 	// numero del equipo (casteo el puntero a un int)
@@ -153,19 +171,22 @@ void *ejecutarReceta(void *i)
 
 	sem_init(&(pthread_data->semaforos_param.sem_mezclar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_salar), 0, 0);
+	sem_init(&(pthread_data->semaforos_param.sem_empanar), 0, 0);
 	// inicializar demas semaforos aqui
 
 	// creo los hilos a todos les paso el struct creado (el mismo a todos los hilos) ya que todos comparten los semaforos
 	int rc;
 	rc = pthread_create(&p1, NULL, cortar, pthread_data);
 	rc = pthread_create(&p2, NULL, mezclar, pthread_data);
-	rc = pthread_create(&p3, NULL, empanar, pthread_data);
+	rc = pthread_create(&p3, NULL, salar, pthread_data);
+	rc = pthread_create(&p4, NULL, empanar, pthread_data);
 	// crear demas hilos aqui
 
 	// join de todos los hilos
 	pthread_join(p1, NULL);
 	pthread_join(p2, NULL);
 	pthread_join(p3, NULL);
+	pthread_join(p4, NULL);
 
 	// valido que el hilo se alla creado bien
 	if (rc)
@@ -177,7 +198,7 @@ void *ejecutarReceta(void *i)
 	// destruccion de los semaforos
 	sem_destroy(&sem_mezclar);
 	sem_destroy(&sem_salar);
-	// destruir demas semaforos
+	sem_destroy(&sem_empanar);
 
 	// salida del hilo
 	pthread_exit(NULL);
