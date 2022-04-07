@@ -31,7 +31,7 @@ Los semáforos:
 |Nombre| Se llama para ... | Valor inicial |
 |--|--| -- |
 |sem_mezclar|Realizar la mezcla de ingredientes| 0 |
-|sem_hornear|Simular el horneado del pan| 1 |
+|sem_hornear|Simular el horneado del pan| 2 |
 |sem_salar | Salar los ingredientes mezclados | 0 |
 |sem_empanar| empanar las milanesas | 0 |
 |sem_cocinar|Cocinar la milanesa en la sarten| 0 |
