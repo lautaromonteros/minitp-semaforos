@@ -94,7 +94,6 @@ void *mezclar(void *data)
 	imprimirAccion(mydata, accion);
 	usleep(1000000);
 	sem_post(&mydata->semaforos_param.sem_salar);
-	sem_post(&mydata->semaforos_param.sem_hornear);
 
 	pthread_exit(NULL);
 }
@@ -137,7 +136,6 @@ void *cocinar(void *data)
 	usleep(5000000);
 	printf("\nEl equipo %d terminó de usar la sartén\n", equipo);
 	sem_post(&mydata->semaforos_param.sem_armar);
-	sem_post(&mydata->semaforos_param.sem_hornear);
 	pthread_mutex_unlock(&m_sarten);
 	pthread_exit(NULL);
 }
