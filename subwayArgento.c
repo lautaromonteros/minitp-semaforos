@@ -147,7 +147,7 @@ void *hornear(void *data)
 	int equipo = *((int *)&mydata->equipo_param);
 
 	sem_wait(&mydata->semaforos_param.sem_hornear);
-	pthread_mutex_trylock(&m_horno);
+	pthread_mutex_lock(&m_horno);
 	printf("\nEl equipo %d está calentando el pan\n", equipo);
 	usleep(10000000);
 	printf("\nEquipo %d, el pan está listo\n", equipo);
