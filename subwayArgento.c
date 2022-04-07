@@ -254,6 +254,11 @@ void *ejecutarReceta(void *i)
 	sem_init(&(pthread_data->semaforos_param.sem_pan), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_entregar), 0, 0);
 
+	// incializo los mutex
+	pthread_mutex_init(&m_salero, NULL);
+	pthread_mutex_init(&m_sarten, NULL);
+	pthread_mutex_init(&m_horno, NULL);
+
 	// creo los hilos a todos les paso el struct creado (el mismo a todos los hilos) ya que todos comparten los semaforos
 	int rc;
 	rc = pthread_create(&p1, NULL, cortar, pthread_data);
