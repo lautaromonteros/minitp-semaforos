@@ -264,7 +264,7 @@ void *ejecutarReceta(void *i)
 	sem_init(&(pthread_data->semaforos_param.sem_salar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_empanar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_cocinar), 0, 0);
-	sem_init(&(pthread_data->semaforos_param.sem_hornear), 0, 0);
+	sem_init(&(pthread_data->semaforos_param.sem_hornear), 0, 2);
 	sem_init(&(pthread_data->semaforos_param.sem_armar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_pan), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_entregar), 0, 0);
