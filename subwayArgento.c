@@ -94,6 +94,7 @@ void *mezclar(void *data)
 	imprimirAccion(mydata, accion);
 	usleep(1000000);
 	sem_post(&mydata->semaforos_param.sem_salar);
+	sem_post(&mydata->semaforos_param.sem_hornear);
 
 	pthread_exit(NULL);
 }
@@ -155,6 +156,20 @@ void *hornear(void *data)
 	pthread_mutex_unlock(&m_horno);
 	pthread_exit(NULL);
 }
+void *hornear2(void *data)
+{
+	struct parametro *mydata = data;
+	int equipo = *((int *)&mydata->equipo_param);
+
+	sem_wait(&mydata->semaforos_param.sem_hornear);
+	pthread_mutex_lock(&m_horno);
+	printf("\nEl equipo %d está calentando el pan\n", equipo);
+	usleep(10000000);
+	printf("\nEquipo %d, el pan está listo\n", equipo);
+	sem_post(&mydata->semaforos_param.sem_pan);
+	pthread_mutex_unlock(&m_horno);
+	pthread_exit(NULL);
+}
 
 void *armar(void *data)
 {
@@ -201,6 +216,7 @@ void *ejecutarReceta(void *i)
 	pthread_t p6;
 	pthread_t p7;
 	pthread_t p8;
+	pthread_t p9;
 
 	// numero del equipo (casteo el puntero a un int)
 	int p = *((int *)i);
@@ -248,7 +264,7 @@ void *ejecutarReceta(void *i)
 	sem_init(&(pthread_data->semaforos_param.sem_salar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_empanar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_cocinar), 0, 0);
-	sem_init(&(pthread_data->semaforos_param.sem_hornear), 0, 1);
+	sem_init(&(pthread_data->semaforos_param.sem_hornear), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_armar), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_pan), 0, 0);
 	sem_init(&(pthread_data->semaforos_param.sem_entregar), 0, 0);
@@ -257,12 +273,13 @@ void *ejecutarReceta(void *i)
 	int rc;
 	rc = pthread_create(&p1, NULL, cortar, pthread_data);
 	rc = pthread_create(&p2, NULL, hornear, pthread_data);
-	rc = pthread_create(&p3, NULL, mezclar, pthread_data);
-	rc = pthread_create(&p4, NULL, salar, pthread_data);
-	rc = pthread_create(&p5, NULL, empanar, pthread_data);
-	rc = pthread_create(&p6, NULL, cocinar, pthread_data);
-	rc = pthread_create(&p7, NULL, armar, pthread_data);
-	rc = pthread_create(&p8, NULL, entregar, pthread_data);
+	rc = pthread_create(&p3, NULL, hornear2, pthread_data);
+	rc = pthread_create(&p4, NULL, mezclar, pthread_data);
+	rc = pthread_create(&p5, NULL, salar, pthread_data);
+	rc = pthread_create(&p6, NULL, empanar, pthread_data);
+	rc = pthread_create(&p7, NULL, cocinar, pthread_data);
+	rc = pthread_create(&p8, NULL, armar, pthread_data);
+	rc = pthread_create(&p9, NULL, entregar, pthread_data);
 
 	// join de todos los hilos
 	pthread_join(p1, NULL);
@@ -273,6 +290,7 @@ void *ejecutarReceta(void *i)
 	pthread_join(p6, NULL);
 	pthread_join(p7, NULL);
 	pthread_join(p8, NULL);
+	pthread_join(p9, NULL);
 
 	// valido que el hilo se alla creado bien
 	if (rc)
@@ -288,6 +306,7 @@ void *ejecutarReceta(void *i)
 	sem_destroy(&sem_cocinar);
 	sem_destroy(&sem_hornear);
 	sem_destroy(&sem_armar);
+	sem_destroy(&sem_pan);
 	sem_destroy(&sem_entregar);
 
 	// salida del hilo
