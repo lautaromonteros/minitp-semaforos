@@ -295,6 +295,11 @@ void *ejecutarReceta(void *i)
 	sem_destroy(&sem_pan);
 	sem_destroy(&sem_entregar);
 
+	// destrucción de los mutex
+	pthread_mutex_destroy(&m_salero);
+	pthread_mutex_destroy(&m_sarten);
+	pthread_mutex_destroy(&m_horno);
+
 	// salida del hilo
 	pthread_exit(NULL);
 }
