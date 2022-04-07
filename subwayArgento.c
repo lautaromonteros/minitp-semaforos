@@ -131,7 +131,7 @@ void *cocinar(void *data)
 	int equipo = *((int *)&mydata->equipo_param);
 
 	sem_wait(&mydata->semaforos_param.sem_cocinar);
-	//pthread_mutex_lock(&m_sarten);
+	pthread_mutex_lock(&m_sarten);
 	printf("\nEl equipo %d está usando la sartén\n", equipo);
 	usleep(5000000);
 	printf("\nEl equipo %d terminó de usar la sartén\n", equipo);
