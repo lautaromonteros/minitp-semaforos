@@ -1,6 +1,6 @@
-## MiniTP SOR 
+# MiniTP SOR 
 
-#### Consgina
+## Consgina
 En la cocina de Subway Argento compiten cuatro equipos de cocineros para ganarse el puesto de trabajo en el local. ¿Quién será el primero en entregar 1 sándwich de milanesa terminado, de 15 cm, al dueño del local?
 
 La dificultad de la competencia es que la cocina no cuenta con el equipamiento individual para cada equipo, sino que algunos de ellos son compartidos. Se tienen que ordenar para cocinar las milanesas ya que solo tienen un sartén para todos los equipos y este cocina una milanesa a la vez, existe solo un horno que cocina dos panes a la vez y un solo salero.
@@ -12,7 +12,7 @@ en el sartén bien caliente.
 
 Como corresponde una buena milanesa tiene panes recién horneados (por 10’ aproximadamente) junto a lechuga fresca, tomate, cebolla morada y pepino recién cortados. Finalmente puedo armar el sándwich con todos los ingredientes. 
 
-#### Explicación pseudocódigo y prueba de escritorio
+## Explicación pseudocódigo y prueba de escritorio
 
 Para el desarrollo de este trabajo se tubo en cuenta las siguientes funciones: 
 
@@ -26,12 +26,15 @@ Para el desarrollo de este trabajo se tubo en cuenta las siguientes funciones:
 |cocinar| Cocina las milanesas en una sartén|
 |armar| Arma el sanguche con la milanesa cocinada y los ingredientes |
 |entregar|El equipo entrega el sangunche|
+|imprimirAccion|Muestra por pantalla la acción que se está ejecutando con los ingredientes|
+
 
 Los semáforos:
+
 |Nombre| Se llama para ... | Valor inicial |
 |--|--| -- |
 |sem_mezclar|Realizar la mezcla de ingredientes| 0 |
-|sem_hornear|Simular el horneado del pan| 1 |
+|sem_hornear|Simular el horneado del pan| 2 |
 |sem_salar | Salar los ingredientes mezclados | 0 |
 |sem_empanar| empanar las milanesas | 0 |
 |sem_cocinar|Cocinar la milanesa en la sarten| 0 |
@@ -39,7 +42,9 @@ Los semáforos:
 |sem_pan| Cuando termina de cocinarse el pan | 0 |
 |sem_entregar| Entregar el pedido | 0 |
 
-Y los mutex:
+
+Y debido a que hay materiales de cocina compartidos, se crearon los siguientes mutex:
+
 |Nombre| Se utiliza para |
 |--|--|
 |m_salero| Simular el uso del salero |
@@ -47,10 +52,15 @@ Y los mutex:
 |m_sarten| Simular el uso de la sartén|
 
 Teniendo en cuenta que:
+
 P() --> llama al semaforo
-V() --> habilita el semaforo
+
+V() --> despierta el semaforo
+
 LOCK() --> bloquea el mutex
+
 UNLOCK() --> desbloquea el mutex
+
 
 ```
 cortar(){
@@ -108,7 +118,7 @@ entregar(){
 ```
 
 #### Prueba de escritorio
-Sea Pn, con n igual a los naturales para cada función de crear el sandwich:
+Sea Pn, con  1 <= n <= 8, y P cada como un hilo que ejecuta cada función:
 
 |P1| P2 |P3| P4 | P5 | P6 | P7 | P8 |
 |:-|:-|:-|:-|:-|:-|:-|:-|
@@ -116,3 +126,5 @@ Sea Pn, con n igual a los naturales para cada función de crear el sandwich:
 || P(sem_hornear) |P(sem_mezclar)| P(sem_salar) | P(sem_empanar) | P(sem_cocinar) | P(sem_armar) | P(sem_entregar) |
 |cortar| hornear |mezclar| salar | empanar | cocinar | armar | entregar |
 |V(sem_mezclar)| V(sem_pan) | V(sem_salar) |V(sem_empanar)| V(sem_cocinar) | V(sem_armar) | V(sem_entregar) | V(sem_mezclar) |
+
+
